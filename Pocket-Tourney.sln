@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{18A039A7-2E62-4FAD-A860-DCA0B761DE02}") = "Pocket-Tourney", "Assembly-CSharp-firstpass.csproj", "{28729BE6-E187-A298-C65B-B68F15CA2DC5}"
+EndProject
+Project("{18A039A7-2E62-4FAD-A860-DCA0B761DE02}") = "Pocket-Tourney", "Assembly-CSharp.csproj", "{D31435FA-3EAB-DFF0-8640-230835A88C54}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28729BE6-E187-A298-C65B-B68F15CA2DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28729BE6-E187-A298-C65B-B68F15CA2DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28729BE6-E187-A298-C65B-B68F15CA2DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28729BE6-E187-A298-C65B-B68F15CA2DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D31435FA-3EAB-DFF0-8640-230835A88C54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D31435FA-3EAB-DFF0-8640-230835A88C54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D31435FA-3EAB-DFF0-8640-230835A88C54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D31435FA-3EAB-DFF0-8640-230835A88C54}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal

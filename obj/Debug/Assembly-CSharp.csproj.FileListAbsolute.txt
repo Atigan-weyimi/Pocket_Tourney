@@ -1,0 +1,2 @@
+C:\Users\tigal\OneDrive\Desktop\Ton challenge\Pocket-Tourney\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
+C:\Users\tigal\OneDrive\Desktop\Ton challenge\Pocket-Tourney\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache

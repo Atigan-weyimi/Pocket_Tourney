@@ -81,10 +81,10 @@ public class OpponentAI : MonoBehaviour {
 			t += Time.deltaTime * _speed;
 			for(int cnt = 0; cnt < myTeam.Length; cnt++) {
 				myTeam[cnt].transform.position = new Vector3(	Mathf.SmoothStep(	unitsSartingPosition[cnt].x, 
-				                                                               		FormationManager.getPositionInFormation(_formationIndex, cnt).x * -1,
+				                                                               		FormationManager.getPositionInFormation(_formationIndex, cnt).x ,
 				                                                               		t),
 				                                            	Mathf.SmoothStep(	unitsSartingPosition[cnt].y, 
-																	                FormationManager.getPositionInFormation(_formationIndex, cnt).y,
+																	                FormationManager.getPositionInFormation(_formationIndex, cnt).y * -1,
 																	                t),
 				                                           		FormationManager.fixedZ );
 				/*
