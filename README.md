@@ -1,21 +1,12 @@
+Current Development Status
+Pocket Tourney is still in development, and there are several nuts and bolts to be ironed out. The game is being developed by a one-man team with literally no budget, which presents unique challenges and opportunities.
 
-This is Unity 2D game , Finger-soccer game
--Rule of Game
-There is single player, two player, terminant game 
-In single game you have to play with AI team 
-In two player game you will paly with other person
-There is about 20 teams in this game , Europ teams and Arab teams 
-Each team has own power and time limit 
-Power displays skill , that is stage of AI
-Time limit is just time that you can keep ball
--Game Money 
-This game uses InAppPurchase(IAP)function in app for purchsing game money 
-You can buy formation and team with game money 
--Publish
-iOS and Android app
-that is iTune connector and google app store 
--Version 
-Unity 5.3
+Key Areas in Development
+Gameplay Mechanics: We are continuously refining the gameplay mechanics to ensure an engaging and dynamic experience. Ensuring pucks do not overlap borders and enhancing the AI are top priorities.
+
+ToN Integration: The integration of in-game assets as non-fungible tokens (NFTs) is in progress. This will empower players with true ownership, allowing them to trade and leverage these assets beyond the game.
+
+PlayDeck Launch: The launch on the PlayDeck platform is being developed to provide a seamless and rewarding experience. This includes the play-to-earn model where players can earn cryptocurrency for their successes in tournaments.
 
 
-
+As a solo developer, I welcome any contributions, feedback, or support from the community. If you are interested in contributing to the project, please feel free to reach out or submit a pull request. Your support is greatly appreciated!
