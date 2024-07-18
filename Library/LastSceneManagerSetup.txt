@@ -1,4 +1,5 @@
 sceneSetups:
-- path: //localhost/C$/@GMT-2024.06.14-08.08.23/Users/tigal/OneDrive/Desktop/Ton challenge/Pocket-Tourney/assets/fingersoccerkit/C#-Assets/Scenes-C#/Game-c#.unity
+- path: assets/fingersoccerkit/C#-Assets/Scenes-C#/Game-c#.unity
   isLoaded: 1
   isActive: 1
+  isSubScene: 0
