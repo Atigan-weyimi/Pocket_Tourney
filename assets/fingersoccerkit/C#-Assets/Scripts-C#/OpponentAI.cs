@@ -142,11 +142,14 @@ public class OpponentAI : MonoBehaviour
         var shooters = new List<GameObject>(); //list of all good units
         var distancesToBall = new List<float>(); //distance of these good units to the ball
         foreach (var shooter in myTeam)
-            if (shooter.transform.position.x > target.transform.position.x + 1.5f)
+        {
+            if (shooter.transform.position.y > target.transform.position.y + 1.5f)
             {
                 shooters.Add(shooter);
                 distancesToBall.Add(Vector3.Distance(shooter.transform.position, target.transform.position));
             }
+        }
+            
 
         //if we found atleast one good unit...
         float minDistance = 1000;
@@ -155,11 +158,13 @@ public class OpponentAI : MonoBehaviour
         {
             //print("we have " + shooters.Count + " unit(s) in a good shoot position");
             for (var i = 0; i < distancesToBall.Count; i++)
+            {
                 if (distancesToBall[i] <= minDistance)
                 {
                     minDistance = distancesToBall[i];
                     minDistancePlayerIndex = i;
                 }
+            }
 
             //print(shooters[i] + " distance to ball is " + distancesToBall[i]);
             //find the unit which is most closed to ball.
@@ -196,7 +201,7 @@ public class OpponentAI : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////
 
-        var shootPositionDifferential = bestShooter.transform.position.y - target.transform.position.y;
+        var shootPositionDifferential = bestShooter.transform.position.x - target.transform.position.x;
         print("Y differential for shooter is: " + shootPositionDifferential);
 
         if (straightAngleDifferential <= 10)
