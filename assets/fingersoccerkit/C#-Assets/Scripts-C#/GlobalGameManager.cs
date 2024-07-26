@@ -259,8 +259,7 @@ public class GlobalGameManager : MonoBehaviour
         fillTimeBar(2);
 
         //if round number is odd, it's players turn, else it's AI or player-2 's turn
-        int carry;
-        carry = round % 2;
+        var carry = round % 2;
         if (carry == 1)
         {
             playersTurn = true;

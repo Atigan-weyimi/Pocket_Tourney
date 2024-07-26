@@ -83,11 +83,13 @@ public class OpponentAI : MonoBehaviour
     {
         //cache the initial position of all units
         var unitsSartingPosition = new List<Vector3>();
-        foreach (var unit in myTeam)
+        var unitsTargetPositions = new List<Vector3>();
+        for (int i = 0; i < myTeam.Length; i++)
         {
+            var unit = myTeam[i];
+            unitsTargetPositions.Add(FormationManager.getPositionInFormation(_formationIndex, i));
             unitsSartingPosition.Add(unit.transform.position); //get the initial postion of this unit for later use.
-            unit.GetComponent<MeshCollider>().enabled =
-                false; //no collision for this unit till we are done with re positioning.
+            unit.GetComponent<MeshCollider>().enabled = false; //no collision for this unit till we are done with re positioning.
         }
 
         float t = 0;
@@ -95,22 +97,15 @@ public class OpponentAI : MonoBehaviour
         {
             t += Time.deltaTime * _speed;
             for (var cnt = 0; cnt < myTeam.Length; cnt++)
-                myTeam[cnt].transform.position = new Vector3(Mathf.SmoothStep(unitsSartingPosition[cnt].x,
-                        FormationManager.getPositionInFormation(_formationIndex, cnt).x,
-                        t),
-                    Mathf.SmoothStep(unitsSartingPosition[cnt].y,
-                        FormationManager.getPositionInFormation(_formationIndex, cnt).y * -1,
-                        t),
-                    FormationManager.fixedZ);
-            /*
-                myTeam[cnt].transform.position.x = Mathf.SmoothStep(	unitsSartingPosition[cnt].x, 
-                                                                        FormationManager.getPositionInFormation(_formationIndex, cnt).x * -1,
-                                                                        t);
-                myTeam[cnt].transform.position.y = Mathf.SmoothStep(	unitsSartingPosition[cnt].y, 
-                                                                        FormationManager.getPositionInFormation(_formationIndex, cnt).y,
-                                                                        t);															
-                myTeam[cnt].transform.position.z = FormationManager.fixedZ;
-                */
+            {
+                var position = unitsSartingPosition[cnt];
+                var targetPosition = unitsTargetPositions[cnt];
+                
+                var positionX = Mathf.SmoothStep(position.x, targetPosition.x, t);
+                var positionY = Mathf.SmoothStep(position.y, targetPosition.y * -1, t);
+                myTeam[cnt].transform.position = new Vector3(positionX, positionY, FormationManager.fixedZ);
+            }
+                
             yield return 0;
         }
 

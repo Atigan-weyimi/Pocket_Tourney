@@ -50,39 +50,39 @@ public class FormationManager : MonoBehaviour
                 break;
 
             case 1:
-                if (_UnitIndex == 0) output = new Vector3(-14, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 1) output = new Vector3(-9.5f, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 2) output = new Vector3(-7, 3.5f + yFixer, fixedZ);
-                if (_UnitIndex == 3) output = new Vector3(-7, -3.5f + yFixer, fixedZ);
-                if (_UnitIndex == 4) output = new Vector3(-3, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 5) output = new Vector3(-5f, 2 + yFixer, fixedZ);
+                if (_UnitIndex == 0) output = new Vector3(0, -10.8f + yFixer, fixedZ);
+                if (_UnitIndex == 1) output = new Vector3(0, -8.0f + yFixer, fixedZ);
+                if (_UnitIndex == 2) output = new Vector3(3.5f,-7 + yFixer, fixedZ);
+                if (_UnitIndex == 3) output = new Vector3(-3.5f, -7 + yFixer, fixedZ);
+                if (_UnitIndex == 4) output = new Vector3(0, -3 + yFixer, fixedZ);
+                if (_UnitIndex == 5) output = new Vector3(2, -5f + yFixer, fixedZ);
                 break;
 
             case 2:
-                if (_UnitIndex == 0) output = new Vector3(-15, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 1) output = new Vector3(-11, 3.5f + yFixer, fixedZ);
-                if (_UnitIndex == 2) output = new Vector3(-11, -3.5f + yFixer, fixedZ);
-                if (_UnitIndex == 3) output = new Vector3(-6, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 4) output = new Vector3(-3, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 5) output = new Vector3(-5f, 2 + yFixer, fixedZ);
+                if (_UnitIndex == 0) output = new Vector3(0, -10.8f + yFixer, fixedZ);
+                if (_UnitIndex == 1) output = new Vector3(3.5f, -10.5f + yFixer, fixedZ);
+                if (_UnitIndex == 2) output = new Vector3(-3.5f, -10.5f + yFixer, fixedZ);
+                if (_UnitIndex == 3) output = new Vector3(0, -6 + yFixer, fixedZ);
+                if (_UnitIndex == 4) output = new Vector3(0, -3 + yFixer, fixedZ);
+                if (_UnitIndex == 5) output = new Vector3(2, -5 + yFixer, fixedZ);
                 break;
 
             case 3:
-                if (_UnitIndex == 0) output = new Vector3(-14, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 1) output = new Vector3(-11, 5.5f + yFixer, fixedZ);
-                if (_UnitIndex == 2) output = new Vector3(-11, 2 + yFixer, fixedZ);
-                if (_UnitIndex == 3) output = new Vector3(-11, -2 + yFixer, fixedZ);
-                if (_UnitIndex == 4) output = new Vector3(-11, -5.5f + yFixer, fixedZ);
-                if (_UnitIndex == 5) output = new Vector3(-5f, 2 + yFixer, fixedZ);
+                if (_UnitIndex == 0) output = new Vector3(0, -10.8f + yFixer, fixedZ);
+                if (_UnitIndex == 1) output = new Vector3(5.5f, -8 + yFixer, fixedZ);
+                if (_UnitIndex == 2) output = new Vector3(2, -8 + yFixer, fixedZ);
+                if (_UnitIndex == 3) output = new Vector3(-2,-8 + yFixer, fixedZ);
+                if (_UnitIndex == 4) output = new Vector3(-5.5f, -1 + yFixer, fixedZ);
+                if (_UnitIndex == 5) output = new Vector3(2, -5f + yFixer, fixedZ);
                 break;
 
             case 4:
-                if (_UnitIndex == 0) output = new Vector3(-15, 0 + yFixer, fixedZ);
-                if (_UnitIndex == 1) output = new Vector3(-12.5f, 2.5f + yFixer, fixedZ);
-                if (_UnitIndex == 2) output = new Vector3(-9, 4.5f + yFixer, fixedZ);
-                if (_UnitIndex == 3) output = new Vector3(-5, 5.5f + yFixer, fixedZ);
-                if (_UnitIndex == 4) output = new Vector3(-1.5f, 5.5f + yFixer, fixedZ);
-                if (_UnitIndex == 5) output = new Vector3(-5f, 2 + yFixer, fixedZ);
+                if (_UnitIndex == 0) output = new Vector3(0, -10.8f + yFixer, fixedZ);
+                if (_UnitIndex == 1) output = new Vector3(2.5f, -8 + yFixer, fixedZ);
+                if (_UnitIndex == 2) output = new Vector3(4.5f, -9 + yFixer, fixedZ);
+                if (_UnitIndex == 3) output = new Vector3(5.5f, -5 + yFixer, fixedZ);
+                if (_UnitIndex == 4) output = new Vector3(5.5f, -1.5f + yFixer, fixedZ);
+                if (_UnitIndex == 5) output = new Vector3(2, -5f + yFixer, fixedZ);
                 break;
         }
 
