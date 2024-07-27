@@ -1,11 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class OpponentAI : MonoBehaviour
 {
-    public static bool opponentCanShoot; //Allowed to shoot? flag
-
     private static GameObject[] myTeam; //List of all AI units
 
     /// *************************************************************************///
@@ -38,6 +38,9 @@ public class OpponentAI : MonoBehaviour
     /// *************************************************************
     private GameObject bestShooter; //select the best unit to shoot.
 
+    private List<OpponentUnitController> controllers = new(10);
+    private bool _canShoot;
+
     //*****************************************************************************
     // Init. Updates the 3d texts with saved values fetched from playerprefs.
     //*****************************************************************************
@@ -47,7 +50,6 @@ public class OpponentAI : MonoBehaviour
         target = GameObject.FindGameObjectWithTag("ball");
         PlayerBasketCenter = GameObject.FindGameObjectWithTag("PlayerBasketCenter");
         isReadyToShoot = false;
-        opponentCanShoot = true;
 
         canChangeFormation = true;
         if (PlayerPrefs.HasKey("OpponentFormation"))
@@ -63,23 +65,50 @@ public class OpponentAI : MonoBehaviour
         {
             //Optional
             unit.name = "Opponent-Player-" + i;
-            unit.GetComponent<OpponentUnitController>().unitIndex = i;
-            unit.GetComponent<Renderer>().material.mainTexture = availableFlags[PlayerPrefs.GetInt("OpponentFlag")];
+            var controller = unit.GetComponent<OpponentUnitController>();
+            controller.unitIndex = i;
+            controller.SetTexture(availableFlags[PlayerPrefs.GetInt("OpponentFlag")]);
+            controllers.Add(controller);
             i++;
             //print("My Team: " + unit.name);
         }
     }
 
+    public void SetCanShoot(bool value)
+    {
+        _canShoot = value;
+        foreach (var controller in controllers)
+        {
+            controller.CanShoot = value;
+        }
+    }
+
     private void Start()
     {
-        StartCoroutine(changeFormation(opponentFormation, 1));
+        StartCoroutine(ChangeFormation(opponentFormation, 1));
         canChangeFormation = false;
+    }
+
+    private void OnEnable()
+    {
+        foreach (var controller in controllers)
+        {
+            controller.gameObject.SetActive(true);
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var controller in controllers)
+        {
+            controller.gameObject.SetActive(false);
+        }
     }
 
     //*****************************************************************************
     // AI can change it's formation to a new one after it deliver or receive a goal.
     //*****************************************************************************
-    public IEnumerator changeFormation(int _formationIndex, float _speed)
+    public IEnumerator ChangeFormation(int formationIndex, float speed)
     {
         //cache the initial position of all units
         var unitsSartingPosition = new List<Vector3>();
@@ -87,7 +116,7 @@ public class OpponentAI : MonoBehaviour
         for (int i = 0; i < myTeam.Length; i++)
         {
             var unit = myTeam[i];
-            unitsTargetPositions.Add(FormationManager.getPositionInFormation(_formationIndex, i));
+            unitsTargetPositions.Add(FormationManager.getPositionInFormation(formationIndex, i));
             unitsSartingPosition.Add(unit.transform.position); //get the initial postion of this unit for later use.
             unit.GetComponent<MeshCollider>().enabled = false; //no collision for this unit till we are done with re positioning.
         }
@@ -95,7 +124,7 @@ public class OpponentAI : MonoBehaviour
         float t = 0;
         while (t < 1)
         {
-            t += Time.deltaTime * _speed;
+            t += Time.deltaTime * speed;
             for (var cnt = 0; cnt < myTeam.Length; cnt++)
             {
                 var position = unitsSartingPosition[cnt];
@@ -117,18 +146,7 @@ public class OpponentAI : MonoBehaviour
         }
     }
 
-
-    private void Update()
-    {
-        //prepare to shoot
-        if (GlobalGameManager.opponentsTurn && opponentCanShoot)
-        {
-            opponentCanShoot = false;
-            StartCoroutine(shoot());
-        }
-    }
-
-    private IEnumerator shoot()
+    public IEnumerator Shoot()
     {
         //wait for a while to fake thinking process :)
         yield return new WaitForSeconds(1.0f);
@@ -264,8 +282,9 @@ public class OpponentAI : MonoBehaviour
         bestShooter.GetComponent<Rigidbody>().AddForce(appliedPower, ForceMode.Impulse);
 
         print(bestShooter.name + " shot the ball with a power of " + appliedPower.magnitude);
+        SetCanShoot(false);
+        
         StartCoroutine(visualDebug());
-
         StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot("Opponent"));
     }
 

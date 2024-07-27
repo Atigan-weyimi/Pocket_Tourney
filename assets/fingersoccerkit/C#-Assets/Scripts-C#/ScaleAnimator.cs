@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,61 +9,38 @@ public class ScaleAnimator : MonoBehaviour
 	/// *************************************************************************///
 	private readonly float intensity = 1.2f; //scale ratio
 
-    private readonly float animSpeed = 1.0f; //scale animation speed
+    private readonly float animSpeed = 1.5f; //scale animation speed
 
     //animation
-    private bool animationFlag;
     private float startScaleX;
     private float startScaleY;
     private float endScaleX;
     private float endScaleY;
 
-    private void Start()
+    private float _time;
+
+    private void Awake()
     {
-        animationFlag = true;
         startScaleX = transform.localScale.x;
         startScaleY = transform.localScale.y;
         endScaleX = startScaleX * intensity;
         endScaleY = startScaleY * intensity;
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (animationFlag)
-        {
-            animationFlag = false;
-            StartCoroutine(animatePulse(gameObject));
-        }
+        _time = 0f;
+        transform.localScale = new Vector3(startScaleX, startScaleY, transform.localScale.z);
     }
 
-    private IEnumerator animatePulse(GameObject _btn)
+    private void Update()
     {
-        yield return new WaitForSeconds(0.01f);
-        var t = 0.0f;
-        while (t <= 1.0f)
-        {
-            t += Time.deltaTime * 1.5f * animSpeed;
-            _btn.transform.localScale = new Vector3(Mathf.SmoothStep(startScaleX, endScaleX, t),
-                Mathf.SmoothStep(startScaleY, endScaleY, t),
-                _btn.transform.localScale.z);
-            yield return 0;
-        }
+        var scale = (Mathf.Cos(_time * Mathf.PI * animSpeed + Mathf.PI) + 1f) * 0.5f;
+        transform.localScale = new Vector3(
+            Mathf.Lerp(startScaleX, endScaleX, scale),
+            Mathf.Lerp(startScaleY, endScaleY, scale), 
+            transform.localScale.z);
 
-        var r = 0.0f;
-        if (_btn.transform.localScale.x >= endScaleX)
-            while (r <= 1.0f)
-            {
-                r += Time.deltaTime * 1.5f * animSpeed;
-                _btn.transform.localScale = new Vector3(Mathf.SmoothStep(endScaleX, startScaleX, r),
-                    Mathf.SmoothStep(endScaleY, startScaleY, r),
-                    _btn.transform.localScale.z);
-                yield return 0;
-            }
-
-        if (_btn.transform.localScale.x <= startScaleX)
-        {
-            yield return new WaitForSeconds(0.01f);
-            animationFlag = true;
-        }
+        _time += Time.deltaTime;
     }
 }

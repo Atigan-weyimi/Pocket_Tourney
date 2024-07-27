@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Puck
 {
-    //prevent player to shoot twice in a round
-    public static bool canShoot;
-    public GameObject _selectionCircle; //Reference to gameObject
+    public event Action<PlayerController> DragStarted;
+    public event Action<PlayerController> DragEnded;
+    public event Action<PlayerController> Shot;
 
     /// *************************************************************************///
     /// Main Player Controller.
@@ -60,26 +61,9 @@ public class PlayerController : MonoBehaviour
         pwr = 0.1f;
         currentDistance = 0;
         shootDirectionVector = new Vector3(0, 0, 0);
-        canShoot = true;
         shootTime = timeAllowedToShoot;
         arrow.Hide();
         _camera = Camera.main;
-    }
-
-    private void Update()
-    {
-        if (_selectionCircle == null)
-        {
-            return;
-        }
-        
-        //Active the selection circles around Player units when they have the turn.
-        if (GlobalGameManager.playersTurn && gameObject.tag == "Player" && !GlobalGameManager.goalHappened)
-            _selectionCircle.GetComponent<Renderer>().enabled = true;
-        else if (GlobalGameManager.opponentsTurn && gameObject.tag == "Player_2" && !GlobalGameManager.goalHappened)
-            _selectionCircle.GetComponent<Renderer>().enabled = true;
-        else
-            _selectionCircle.GetComponent<Renderer>().enabled = false;
     }
     
     public static Vector3 RayPlaneIntersection(Vector3 rayOrigin, Vector3 rayDirection, Vector3 plainPosition, Vector3 plainNormal)
@@ -91,14 +75,37 @@ public class PlayerController : MonoBehaviour
         return rayOrigin + rayDirection * distance;
     }
 
+    private bool prevInDrag;
+    private bool InDrag
+    {
+        set
+        {
+            if (prevInDrag == value)
+            {
+                return;
+            }
+
+            prevInDrag = value;
+            if (value)
+            {
+                DragStarted?.Invoke(this);
+            }
+            else
+            {
+                DragEnded?.Invoke(this);
+            }
+        }
+
+        get => prevInDrag;
+    }
+
     //***************************************************************************//
     // Works fine with mouse and touch
     // This is the main functiuon used to manage drag on units, calculating the power and debug vectors, and set the final parameters to shoot.
     //***************************************************************************//
     private void OnMouseDrag()
     {
-        if (!canShoot || ((!GlobalGameManager.playersTurn || gameObject.tag != "Player") &&
-                          (!GlobalGameManager.opponentsTurn || gameObject.tag != "Player_2")))
+        if (!CanShoot)
         {
             return;
         }
@@ -114,6 +121,7 @@ public class PlayerController : MonoBehaviour
         
         currentDistance = dragDistance;
         safeDistance = Mathf.Clamp(currentDistance, 0f, GlobalGameManager.maxDistance);
+        InDrag = currentDistance > 0.75f;
 
         pwr = safeDistance * 12; //this is very important. change with extreme caution.
 
@@ -194,29 +202,20 @@ public class PlayerController : MonoBehaviour
     //***************************************************************************//
     private void OnMouseUp()
     {
-        //Special checks for 2-player game
-        if ((GlobalGameManager.playersTurn && gameObject.tag == "Player_2") ||
-            (GlobalGameManager.opponentsTurn && gameObject.tag == "Player"))
+        if (!InDrag)
         {
             arrow.Hide();
             return;
         }
-
-        //give the player a second chance to choose another ball if drag on the unit is too low
-        print("currentDistance: " + currentDistance);
-        if (currentDistance < 0.75f)
-        {
-            arrow.Hide();
-            return;
-        }
-
+        
+        InDrag = false;
+        
         //But if player wants to shoot anyway:
         //prevent double shooting in a round
-        if (!canShoot)
+        if (!CanShoot)
+        {
             return;
-
-        //no more shooting is possible	
-        canShoot = false;
+        }
 
         //keep track of elapsed time after letting the ball go, 
         //so we can findout if ball has stopped and the round should be changed
@@ -237,6 +236,7 @@ public class PlayerController : MonoBehaviour
         //always make the player to move only in x-y plane and not on the z direction
         print("shoot power: " + outPower.magnitude);
         GetComponent<Rigidbody>().AddForce(outPower, ForceMode.Impulse);
+        Shot?.Invoke(this);
 
         //change the turn
         if (GlobalGameManager.gameMode == 0)

@@ -102,7 +102,9 @@ public class GlobalGameManager : MonoBehaviour
     private int minutes;
 
     //gameObject references
-    private GameObject playerAIController;
+    [SerializeField] private PlayerTeam player1Team;
+    [SerializeField] private PlayerTeam player2Team;
+    [SerializeField] private OpponentAI aiTeam;
     private GameObject opponentAIController;
     private GameObject ball;
     private bool canPlayCrowdChants;
@@ -113,7 +115,6 @@ public class GlobalGameManager : MonoBehaviour
     // we check which side in playing (should be active) and deactive the side that is
     // not playing by deactivating all it's units.
     //*****************************************************************************
-    private GameObject[] player2Team; //array of all player-2 units in the game
     private GameObject[] cpuTeam; //array of all AI units in the game
 
     //*****************************************************************************
@@ -172,7 +173,6 @@ public class GlobalGameManager : MonoBehaviour
         else
             gameMode = 0; // Deafault Mode (Player-1 vs AI)
 
-        playerAIController = GameObject.FindGameObjectWithTag("playerAI");
         opponentAIController = GameObject.FindGameObjectWithTag("opponentAI");
         ball = GameObject.FindGameObjectWithTag("ball");
 
@@ -185,14 +185,16 @@ public class GlobalGameManager : MonoBehaviour
         {
             case 0:
                 //find and deactive all player2 units. This is player-1 vs AI.
-                player2Team = GameObject.FindGameObjectsWithTag("Player_2");
-                foreach (var unit in player2Team) unit.SetActive(false);
+                player2Team.enabled = false;
                 break;
 
             case 1:
                 //find and deactive all AI Opponent units. This is Player-1 vs Player-2.
                 cpuTeam = GameObject.FindGameObjectsWithTag("Opponent");
-                foreach (var unit in cpuTeam) unit.SetActive(false);
+                foreach (var unit in cpuTeam)
+                {
+                    unit.SetActive(false);
+                }
                 //deactive opponent's AI
                 opponentAIController.SetActive(false);
                 break;
@@ -264,25 +266,38 @@ public class GlobalGameManager : MonoBehaviour
         {
             playersTurn = true;
             opponentsTurn = false;
-            PlayerController.canShoot = true;
-            OpponentAI.opponentCanShoot = false;
+            
+            player1Team.SetCanShoot(true);
+
+            if (gameMode == 0)
+            {
+                aiTeam.SetCanShoot(false);
+            }
+            else
+            {
+                player2Team.SetCanShoot(false);
+            }
+            
             whosTurn = "player";
         }
         else
         {
             playersTurn = false;
             opponentsTurn = true;
-            PlayerController.canShoot = false;
-            OpponentAI.opponentCanShoot = true;
+            player1Team.SetCanShoot(false);
+            
+            if (gameMode == 0)
+            {
+                aiTeam.SetCanShoot(true);
+                StartCoroutine(aiTeam.Shoot());
+            }
+            else
+            {
+                player2Team.SetCanShoot(true);
+            }
+            
             whosTurn = "opponent";
         }
-
-        //Override
-        //for two player game, players can always shoot.
-        //we override this because both human players play on the same device and must be able to shoot at every turn.
-        //we just limit their actions to their own units.
-        if (gameMode == 1)
-            PlayerController.canShoot = true;
     }
 
 
@@ -372,7 +387,7 @@ public class GlobalGameManager : MonoBehaviour
         {
             t += Time.deltaTime;
             if (goalHappened) yield break;
-            yield return 0;
+            yield return null;
         }
 
         //we had a simple shoot with no goal result
@@ -461,17 +476,20 @@ public class GlobalGameManager : MonoBehaviour
 
         //*** reformation of units ***//
         //Reformation for player_1
-        StartCoroutine(playerAIController.GetComponent<PlayerAI>()
-            .changeFormation(PlayerAI.playerTeam, PlayerPrefs.GetInt("PlayerFormation"), 0.6f, 1));
+        StartCoroutine(player1Team.ChangeFormation(PlayerPrefs.GetInt("PlayerFormation"), 0.6f));
 
         //if this is player-1 vs player-2 match:
         if (gameMode == 1)
-            StartCoroutine(playerAIController.GetComponent<PlayerAI>().changeFormation(PlayerAI.player2Team,
-                PlayerPrefs.GetInt("Player2Formation"), 0.6f, -1));
-        else //if this is player-1 vs AI match:
+        {
+            StartCoroutine(player2Team.ChangeFormation(PlayerPrefs.GetInt("Player2Formation"), 0.6f));
+        }
+        else
+        {
+            //if this is player-1 vs AI match:
             //get a new random formation everytime
             StartCoroutine(opponentAIController.GetComponent<OpponentAI>()
-                .changeFormation(Random.Range(0, FormationManager.formations), 0.6f));
+                .ChangeFormation(Random.Range(0, FormationManager.formations), 0.6f));
+        } 
 
         yield return new WaitForSeconds(3);
 
