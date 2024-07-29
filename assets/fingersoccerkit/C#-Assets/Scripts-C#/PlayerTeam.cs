@@ -1,30 +1,55 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerTeam : MonoBehaviour
 {
+    public event Action PassHapenned;
+    
     [SerializeField] private string _formationPrefsKey;
     [SerializeField] private string _flagPrefsKey;
     [SerializeField] private string _pucksTag;
     [SerializeField] private string _puckNamePrefix;
     [SerializeField] private int _direction;
     [SerializeField] private Texture2D[] _availableFlags; //array of all available teams
+    [SerializeField] private GameObject _targetBucket; //array of all available teams
+    [SerializeField] private GameArea _gameArea;
     
     public static GameObject[] team; //array of all player units
     public static int playerFormation; //player formation
     public static int playerFlag; //player team flag
     
-    private List<PlayerController> controllers = new(10);
+    private List<PlayerController> _controllers = new(10);
     private bool _canShoot;
+    private PlayerController _shootingPuck;
+    private PlayerController _passReceiver;
+    private bool _shootingPuckHitBall;
+    private CancellationTokenSource _turnCancellation = new();
+
+    public bool HasMovingPuck => _controllers.Any(puck => puck.IsMoving || puck.IsCathingBall);
     
     public void SetCanShoot(bool value)
     {
         _canShoot = value;
-        foreach (var controller in controllers)
+        foreach (var controller in _controllers)
         {
-            controller.CanShoot = value;
+            controller.CanShoot = value && (_passReceiver == null || _passReceiver == controller);
         }
+    }
+
+    public void CancelTurn()
+    {
+        _shootingPuck = null;
+        _passReceiver = null;
+        _shootingPuckHitBall = false;
+        
+        _turnCancellation?.Cancel();
+        _turnCancellation?.Dispose();
+        _turnCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
     }
 
     //*****************************************************************************
@@ -42,18 +67,19 @@ public class PlayerTeam : MonoBehaviour
             unit.name = _puckNamePrefix + i;
             var controller = unit.GetComponent<PlayerController>();
             controller.unitIndex = i;
-            controller.SetTexture(_availableFlags[playerFlag]);
-            controllers.Add(controller);
+            controller.Init(_availableFlags[playerFlag], _targetBucket.transform.position, _gameArea);
+            _controllers.Add(controller);
         }
     }
 
     private void OnEnable()
     {
-        foreach (var controller in controllers)
+        foreach (var controller in _controllers)
         {
             controller.Shot += OnPlayerShot;
             controller.DragStarted += ControllerOnDragStarted;
             controller.DragEnded += ControllerOnDragEnded;
+            controller.HitBall += ControllerOnHitBall;
             
             controller.gameObject.SetActive(true);
         }
@@ -61,11 +87,17 @@ public class PlayerTeam : MonoBehaviour
 
     private void OnDisable()
     {
-        foreach (var controller in controllers)
+        foreach (var controller in _controllers)
         {
+            if (controller == null)
+            {
+                continue;
+            }
+            
             controller.Shot -= OnPlayerShot;
             controller.DragStarted -= ControllerOnDragStarted;
             controller.DragEnded -= ControllerOnDragEnded;
+            controller.HitBall -= ControllerOnHitBall;
             
             controller.gameObject.SetActive(false);
         }
@@ -73,12 +105,15 @@ public class PlayerTeam : MonoBehaviour
 
     private void OnPlayerShot(PlayerController playerController)
     {
+        _shootingPuck = playerController;
+        _shootingPuckHitBall = false;
+        _passReceiver = null;
         SetCanShoot(false);
     }
 
     private void ControllerOnDragStarted(PlayerController playerController)
     {
-        foreach (var controller in controllers)
+        foreach (var controller in _controllers)
         {
             if (controller == playerController)
             {
@@ -91,9 +126,23 @@ public class PlayerTeam : MonoBehaviour
 
     private void ControllerOnDragEnded(PlayerController playerController)
     {
-        foreach (var controller in controllers)
+        foreach (var controller in _controllers)
         {
             controller.CanShoot = _canShoot;
+        }
+    }
+
+    private void ControllerOnHitBall(Puck puck, BallManager ball)
+    {
+        if (puck == _shootingPuck)
+        {
+            _shootingPuckHitBall = true;
+        }
+        else if (_shootingPuckHitBall && _passReceiver == null)
+        {
+            _passReceiver = puck as PlayerController;
+            puck.CatchBall(ball, _turnCancellation.Token).Forget();
+            PassHapenned?.Invoke();
         }
     }
 

@@ -1,11 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class OpponentAI : MonoBehaviour
 {
+    [SerializeField] private float _debugHitForceScale;
+    [SerializeField] private GameArea _gameArea;
+    
     private static GameObject[] myTeam; //List of all AI units
 
     /// *************************************************************************///
@@ -41,6 +45,8 @@ public class OpponentAI : MonoBehaviour
     private List<OpponentUnitController> controllers = new(10);
     private bool _canShoot;
 
+    public bool HasMovingPuck => controllers.Any(puck => puck.IsMoving);
+
     //*****************************************************************************
     // Init. Updates the 3d texts with saved values fetched from playerprefs.
     //*****************************************************************************
@@ -67,7 +73,7 @@ public class OpponentAI : MonoBehaviour
             unit.name = "Opponent-Player-" + i;
             var controller = unit.GetComponent<OpponentUnitController>();
             controller.unitIndex = i;
-            controller.SetTexture(availableFlags[PlayerPrefs.GetInt("OpponentFlag")]);
+            controller.Init(availableFlags[PlayerPrefs.GetInt("OpponentFlag")], PlayerBasketCenter.transform.position, _gameArea);
             controllers.Add(controller);
             i++;
             //print("My Team: " + unit.name);
@@ -101,6 +107,10 @@ public class OpponentAI : MonoBehaviour
     {
         foreach (var controller in controllers)
         {
+            if (controller == null)
+            {
+                continue;
+            }
             controller.gameObject.SetActive(false);
         }
     }
@@ -278,6 +288,8 @@ public class OpponentAI : MonoBehaviour
         //add team power bonus
         //print ("OLD appliedPower: " + appliedPower.magnitude);
         appliedPower *= 1 + TeamsManager.getTeamSettings(PlayerPrefs.GetInt("Player2Flag")).x / 50;
+        appliedPower *= _debugHitForceScale;
+        
         //print ("NEW appliedPower: " + appliedPower.magnitude);
         bestShooter.GetComponent<Rigidbody>().AddForce(appliedPower, ForceMode.Impulse);
 
@@ -285,7 +297,7 @@ public class OpponentAI : MonoBehaviour
         SetCanShoot(false);
         
         StartCoroutine(visualDebug());
-        StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot("Opponent"));
+        StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot());
     }
 
     //*****************************************************************************

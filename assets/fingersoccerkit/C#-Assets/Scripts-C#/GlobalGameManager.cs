@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GlobalGameManager : MonoBehaviour
 {
@@ -105,9 +107,11 @@ public class GlobalGameManager : MonoBehaviour
     [SerializeField] private PlayerTeam player1Team;
     [SerializeField] private PlayerTeam player2Team;
     [SerializeField] private OpponentAI aiTeam;
+    [SerializeField] private GameArea gameArea;
     private GameObject opponentAIController;
-    private GameObject ball;
+    private BallManager ball;
     private bool canPlayCrowdChants;
+    private bool passHappened;
 
 
     //*****************************************************************************
@@ -174,9 +178,7 @@ public class GlobalGameManager : MonoBehaviour
             gameMode = 0; // Deafault Mode (Player-1 vs AI)
 
         opponentAIController = GameObject.FindGameObjectWithTag("opponentAI");
-        ball = GameObject.FindGameObjectWithTag("ball");
-
-        manageGameModes();
+        ball = GameObject.FindGameObjectWithTag("ball").GetComponent<BallManager>();
     }
 
     private void manageGameModes()
@@ -203,9 +205,25 @@ public class GlobalGameManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        roundTurnManager();
+        manageGameModes();
+        StartTurn();
         yield return new WaitForSeconds(1.5f);
         playSfx(startWistle);
+    }
+
+    private void OnEnable()
+    {
+        player1Team.PassHapenned += PassHappenned;
+    }
+
+    private void OnDisable()
+    {
+        player1Team.PassHapenned -= PassHappenned;
+    }
+
+    private void PassHappenned()
+    {
+        passHappened = true;
     }
 
     //*****************************************************************************
@@ -248,7 +266,7 @@ public class GlobalGameManager : MonoBehaviour
         }
     }
 
-    private void roundTurnManager()
+    private void StartTurn()
     {
         if (gameIsFinished || goalHappened)
             return;
@@ -261,8 +279,15 @@ public class GlobalGameManager : MonoBehaviour
         fillTimeBar(2);
 
         //if round number is odd, it's players turn, else it's AI or player-2 's turn
+        if (!passHappened)
+        {
+            round++;
+        }
+
+        passHappened = false;
+        
         var carry = round % 2;
-        if (carry == 1)
+        if (carry == 0)
         {
             playersTurn = true;
             opponentsTurn = false;
@@ -276,6 +301,7 @@ public class GlobalGameManager : MonoBehaviour
             else
             {
                 player2Team.SetCanShoot(false);
+                player2Team.CancelTurn();
             }
             
             whosTurn = "player";
@@ -285,6 +311,7 @@ public class GlobalGameManager : MonoBehaviour
             playersTurn = false;
             opponentsTurn = true;
             player1Team.SetCanShoot(false);
+            player1Team.CancelTurn();
             
             if (gameMode == 0)
             {
@@ -370,45 +397,36 @@ public class GlobalGameManager : MonoBehaviour
                 break;
         }
 
-        roundTurnManager();
+        StartTurn();
     }
 
     //*****************************************************************************
     // What happens after a shoot is performed?
     //*****************************************************************************
-    public IEnumerator managePostShoot(string _shootBy)
+    public IEnumerator managePostShoot()
     {
         shootHappened = true;
 
-        //get who is did the shoot
-        //if we had a goal after the shoot was done and just before the round change, leave the process to other controllers.
-        float t = 0;
-        while (t < timeStepToAdvanceRound)
+        yield return new WaitForSeconds(1f);
+        while (true)
         {
-            t += Time.deltaTime;
-            if (goalHappened) yield break;
-            yield return null;
-        }
-
-        //we had a simple shoot with no goal result
-        if (t >= timeStepToAdvanceRound)
-        {
-            //add to round counters
-            switch (_shootBy)
+            var someMove = player1Team.HasMovingPuck || player2Team.HasMovingPuck || aiTeam.HasMovingPuck || ball.IsMoving;
+            if (someMove)
             {
-                case "Player":
-                    round = 2;
-                    break;
-                case "Player_2":
-                    round = 1;
-                    break;
-                case "Opponent":
-                    round = 1;
-                    break;
+                yield return new WaitForSeconds(0.1f);
             }
-
-            roundTurnManager(); //cycle again between players
+            else
+            {
+                break;
+            }
         }
+
+        if (goalHappened)
+        {
+            yield break;
+        }
+        
+        StartTurn(); //cycle again between players
     }
 
     //*****************************************************************************
@@ -425,6 +443,13 @@ public class GlobalGameManager : MonoBehaviour
         //soft pause the game for reformation and other things...
         goalHappened = true;
         shootHappened = false;
+        
+        player1Team.CancelTurn();
+        player2Team.CancelTurn();
+        
+        ball.Velocity = Vector3.zero;
+        ball.IsKinematic = true;
+        ball.CollisionEnabled = false;
 
         //add to goal counters
         switch (_goalBy)
@@ -468,9 +493,14 @@ public class GlobalGameManager : MonoBehaviour
 
         //bring the ball back to it's initial position
         ball.GetComponent<TrailRenderer>().enabled = false;
-        ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        ball.Detach();
+        
+        ball.transform.position = new Vector3(0, 0, -0.5f);
+        ball.CollisionEnabled = true;
+        ball.IsKinematic = false;
         ball.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        ball.transform.position = new Vector3(0, -0.81f, -0.7f);
+        ball.Velocity = Vector3.zero;
+        
         yield return new WaitForSeconds(1);
         ball.GetComponent<TrailRenderer>().enabled = true;
 
@@ -503,7 +533,7 @@ public class GlobalGameManager : MonoBehaviour
 
         //else, continue to the next round
         goalHappened = false;
-        roundTurnManager();
+        StartTurn();
         playSfx(startWistle);
     }
 

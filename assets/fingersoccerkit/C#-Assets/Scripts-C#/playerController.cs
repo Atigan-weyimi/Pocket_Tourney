@@ -49,8 +49,9 @@ public class PlayerController : Puck
     //*****************************************************************************
     // Init
     //*****************************************************************************
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
         //Find and cache important gameObjects
         helperBegin = GameObject.FindGameObjectWithTag("mouseHelperBegin");
         helperEnd = GameObject.FindGameObjectWithTag("mouseHelperEnd");
@@ -239,9 +240,6 @@ public class PlayerController : Puck
         Shot?.Invoke(this);
 
         //change the turn
-        if (GlobalGameManager.gameMode == 0)
-            StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot("Player"));
-        else if (GlobalGameManager.gameMode == 1)
-            StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot(gameObject.tag));
+        StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot());
     }
 }
