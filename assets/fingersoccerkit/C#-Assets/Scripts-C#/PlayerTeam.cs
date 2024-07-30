@@ -138,12 +138,20 @@ public class PlayerTeam : MonoBehaviour
         {
             _shootingPuckHitBall = true;
         }
-        else if (_shootingPuckHitBall && _passReceiver == null)
+        else if (_shootingPuckHitBall && _passReceiver == null && IsValidHit(puck, ball))
         {
             _passReceiver = puck as PlayerController;
             puck.CatchBall(ball, _turnCancellation.Token).Forget();
             PassHapenned?.Invoke();
         }
+    }
+
+    private bool IsValidHit(Puck puck, BallManager ball)
+    {
+        var ballDirection = ball.Velocity.normalized;
+        var ballToPuck = (puck.transform.position - ball.transform.position).normalized;
+        var dotProduct = Vector3.Dot(ballDirection, ballToPuck);
+        return Mathf.Abs(dotProduct) > 0.1f;
     }
 
     private void Start()

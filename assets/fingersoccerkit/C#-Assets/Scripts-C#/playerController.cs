@@ -149,14 +149,16 @@ public class PlayerController : Puck
         Debug.DrawLine(transform.position, arrow.transform.position, Color.blue);
         //debug line from initial position to the exact opposite position (mirrored) of our current touch position
         Debug.DrawLine(transform.position, 2 * transform.position - helperBegin.transform.position, Color.yellow);
+        
+        //final vector used to shoot the unit.
+        shootDirectionVector = delta.normalized;
+        
         //cast ray forward and collect informations
         CastRay();
 
         //Not used! You can extend this function to have more precise control over physics of the game
         //sweepTest();
 
-        //final vector used to shoot the unit.
-        shootDirectionVector = delta.normalized;
         //print(shootDirectionVector);
     }
 
@@ -174,7 +176,7 @@ public class PlayerController : Puck
     private void CastRay()
     {
         //cast the ray from units position with a normalized direction out of it which is mirrored to our current drag vector.
-        ray = new Ray(transform.position, (helperEnd.transform.position - transform.position).normalized);
+        ray = new Ray(transform.position, shootDirectionVector);
 
         if (Physics.Raycast(ray, out hitInfo, currentDistance))
         {
