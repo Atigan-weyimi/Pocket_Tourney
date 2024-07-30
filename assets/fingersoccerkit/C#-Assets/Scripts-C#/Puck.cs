@@ -14,7 +14,7 @@ public class Puck : MonoBehaviour
     [SerializeField] private GameObject _selectionCircle;
     [SerializeField] private BallManager _debugBall;
     
-    private const float PassTurnSpeedRadInSec = 3f;
+    private const float PassTurnSpeedRadInSec = 1.6f;
 
     private bool _canShoot;
     
