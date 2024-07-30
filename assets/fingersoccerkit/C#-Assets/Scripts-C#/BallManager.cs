@@ -1,80 +1,127 @@
+using System;
 using UnityEngine;
-using System.Collections;
 
-public class BallManager : MonoBehaviour {
-		
-	//*****************************************************************************
-	// Main Ball Manager.
-	// This class controls ball collision with Goal triggers and gatePoles, 
-	// and also stops the ball when the spped is too low.
-	//*****************************************************************************
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(SpringJoint))]
+public class BallManager : MonoBehaviour
+{
+    public AudioClip _ballHitPost; //Sfx for hitting the poles
 
-	private GameObject gameController;	//Reference to main game controller
-	public AudioClip ballHitPost;				//Sfx for hitting the poles
+    //*****************************************************************************
+    // Main Ball Manager.
+    // This class controls ball collision with Goal triggers and gatePoles, 
+    // and also stops the ball when the spped is too low.
+    //*****************************************************************************
 
-	void Awake (){
-		gameController = GameObject.FindGameObjectWithTag("GameController");
-	}
+    private GameObject _gameController; //Reference to main game controller
+    private Rigidbody _rigidbody;
+    private SpringJoint _springJoint;
+    private Collider _collider;
 
-	void Update (){
-		manageBallFriction();
-	}
+    //*****************************************************************************
+    // Check ball's speed at all times.
+    //*****************************************************************************
+    private float _ballSpeed;
 
-	void LateUpdate (){
-		//we restrict rotation and position once again to make sure that ball won't has an unwanted effect.
-		transform.position = new Vector3(transform.position.x,
-			                             transform.position.y,
-			                             -0.5f);
+    public Vector3 Velocity
+    {
+        get => _rigidbody.velocity;
+        set => _rigidbody.velocity = value;
+    }
 
-		//if you want a fixed ball with no rotation, uncomment the following line:
-		//transform.rotation = Quaternion.Euler(90, 0, 0);
-	}
+    public bool IsMoving => _rigidbody.velocity.sqrMagnitude > 0.01f;
 
-	//*****************************************************************************
-	// Check ball's speed at all times.
-	//*****************************************************************************
-	private float ballSpeed;
-	void manageBallFriction (){
-		ballSpeed = GetComponent<Rigidbody>().velocity.magnitude;
-		//print("Ball Speed: " + rigidbody.velocity.magnitude);
-		if(ballSpeed < 0.5f) {
-			//forcestop the ball
-			//rigidbody.velocity = Vector3.zero;
-			//rigidbody.angularVelocity = Vector3.zero;
-			GetComponent<Rigidbody>().drag = 2;
-		} else {
-			//let it slide
-			GetComponent<Rigidbody>().drag = 0.9f;
-		}
-	}
-	void OnCollisionEnter ( Collision other  ){
-		switch(other.gameObject.tag) {
-			case "gatePost":
-				playSfx(ballHitPost);
-				break;
-		}
-	}
+    public bool IsKinematic
+    {
+        get => _rigidbody.isKinematic;
+        set => _rigidbody.isKinematic = value;
+    }
+    
+    public bool CollisionEnabled
+    {
+        get => _collider.enabled;
+        set => _collider.enabled = value;
+    }
 
-	void OnTriggerEnter ( Collider other  ){
-		switch(other.gameObject.tag) {
-			case "opponentGoalTrigger":
-				StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostGoal("Player"));
-				break;
-				
-			case "playerGoalTrigger":
-				StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostGoal("Opponent"));
-				break;
-		}
-	}
+    public void Attach(Rigidbody rigidbody)
+    {
+        _springJoint.connectedBody = rigidbody;
+        _springJoint.maxDistance = 0f;
+    }
 
-	//*****************************************************************************
-	// Play sound clips
-	//*****************************************************************************
-	void playSfx ( AudioClip _clip  ){
-		GetComponent<AudioSource>().clip = _clip;
-		if(!GetComponent<AudioSource>().isPlaying) {
-			GetComponent<AudioSource>().Play();
-		}
-	}
+    public void Detach()
+    {
+        _springJoint.connectedBody = null;
+        _springJoint.maxDistance = 1000f;
+    }
 
+    private void Awake()
+    {
+        _gameController = GameObject.FindGameObjectWithTag("GameController");
+        _rigidbody = GetComponent<Rigidbody>();
+        _springJoint = GetComponent<SpringJoint>();
+        _collider = GetComponent<Collider>();
+    }
+
+    private void Update()
+    {
+        ManageBallFriction();
+    }
+
+    private void LateUpdate()
+    {
+        //we restrict rotation and position once again to make sure that ball won't has an unwanted effect.
+        transform.position = new Vector3(transform.position.x,  transform.position.y, -0.5f);
+
+        //if you want a fixed ball with no rotation, uncomment the following line:
+        //transform.rotation = Quaternion.Euler(90, 0, 0);
+    }
+
+    private void ManageBallFriction()
+    {
+        _ballSpeed = _rigidbody.velocity.magnitude;
+        //print("Ball Speed: " + rigidbody.velocity.magnitude);
+        if (_ballSpeed < 0.5f)
+        {
+            _rigidbody.drag = 5;
+        }
+        else
+        {
+            //let it slide
+            _rigidbody.drag = 0.9f;
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "gatePost":
+                PlaySfx(_ballHitPost);
+                break;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "opponentGoalTrigger":
+                StartCoroutine(_gameController.GetComponent<GlobalGameManager>().managePostGoal("Player"));
+                break;
+
+            case "playerGoalTrigger":
+                StartCoroutine(_gameController.GetComponent<GlobalGameManager>().managePostGoal("Opponent"));
+                break;
+        }
+    }
+    
+    //*****************************************************************************
+    // Play sound clips
+    //*****************************************************************************
+    private void PlaySfx(AudioClip clip)
+    {
+        GetComponent<AudioSource>().clip = clip;
+        if (!GetComponent<AudioSource>().isPlaying) GetComponent<AudioSource>().Play();
+    }
 }

@@ -34,7 +34,7 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.85882354}
   m_BuildTextureStacks: []
 --- !u!1002 &2100001
 EditorExtensionImpl:

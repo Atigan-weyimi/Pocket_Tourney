@@ -1,29 +1,30 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Runtime.InteropServices;
+
 namespace admob
 {
-	public class Admob {
+    public class Admob
+    {
         public delegate void AdmobEventHandler(string eventName, string msg);
 
         public event AdmobEventHandler bannerEventHandler;
         public event AdmobEventHandler interstitialEventHandler;
         public event AdmobEventHandler rewardedVideoEventHandler;
 
-		private static Admob _instance;	
-	
-		public static Admob Instance()
-	    {
-	        if(_instance == null)
-	        {
-	            _instance = new Admob();
-				_instance.preInitAdmob ();
-	        }
-	        return _instance;
-	    }
-        
-       
-        #if UNITY_IOS
+        private static Admob _instance;
+
+        public static Admob Instance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Admob();
+                _instance.preInitAdmob();
+            }
+
+            return _instance;
+        }
+
+
+#if UNITY_IOS
         internal delegate void AdmobAdCallBack(string adtype, string eventName, string msg);
         private void preInitAdmob()
         {
@@ -131,7 +132,7 @@ namespace admob
                 Admob.Instance().rewardedVideoEventHandler(eventName, msg);
             }
         }
-        
+
 #elif UNITY_ANDROID
 	private AndroidJavaObject jadmob;
          private void preInitAdmob(){
@@ -223,46 +224,45 @@ namespace admob
 #else
         private void preInitAdmob()
         {
-           
         }
-        
+
         public void initAdmob(string bannerID, string fullID)
         {
             Debug.Log("calling initAdmob");
         }
 
-        
+
         public void showBannerAbsolute(AdSize size, int x, int y)
         {
             Debug.Log("calling showBannerAbsolute");
         }
 
-        
+
         public void showBannerRelative(AdSize size, int position, int marginY)
         {
             Debug.Log("calling showBannerRelative");
         }
 
-        
+
         public void removeBanner()
         {
             Debug.Log("calling removeBanner");
         }
 
-        
+
         public void loadInterstitial()
         {
             Debug.Log("calling loadInterstitial");
         }
 
-        
+
         public bool isInterstitialReady()
         {
             Debug.Log("calling isInterstitialReady");
-        return false;
+            return false;
         }
 
-        
+
         public void showInterstitial()
         {
             Debug.Log("calling showInterstitial");
@@ -272,27 +272,28 @@ namespace admob
         {
             Debug.Log("calling loadRewardedVideo");
         }
+
         public bool isRewardedVideoReady()
         {
             Debug.Log("calling isRewardedVideoReady");
             return false;
         }
+
         public void showRewardedVideo()
         {
             Debug.Log("calling showRewardedVideo");
         }
-        
+
         public void setTesting(bool v)
         {
             Debug.Log("calling setTesting");
         }
 
-        
+
         public void setForChildren(bool v)
         {
             Debug.Log("calling setForChildren");
         }
-        #endif
-
+#endif
     }
 }
