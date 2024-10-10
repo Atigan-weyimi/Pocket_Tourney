@@ -1264,7 +1264,7 @@ GameObject:
   - component: {fileID: 19552624}
   m_Layer: 0
   m_Name: playerGoalTrigger
-  m_TagString: opponentGoalTrigger
+  m_TagString: playerGoalTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2479,6 +2479,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ballHitPost: {fileID: 0}
+  _shootingPuck: {fileID: 0}
+  _shooterHitTheBall: 0
 --- !u!82 &398741213
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5113,6 +5115,7 @@ GameObject:
   - component: {fileID: 1072002817}
   - component: {fileID: 1072002816}
   - component: {fileID: 1072002815}
+  - component: {fileID: 1072002819}
   m_Layer: 0
   m_Name: gameStatusPlane
   m_TagString: Untagged
@@ -5211,6 +5214,18 @@ Transform:
   - {fileID: 360544343}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &1072002819
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072002814}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 4
+  m_SortAtRoot: 0
 --- !u!1001 &1079840819
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5267,6 +5282,7 @@ GameObject:
   - component: {fileID: 1095653632}
   - component: {fileID: 1095653635}
   - component: {fileID: 1095653633}
+  - component: {fileID: 1095653636}
   m_Layer: 0
   m_Name: Gate
   m_TagString: Untagged
@@ -5283,7 +5299,7 @@ Transform:
   m_GameObject: {fileID: 1095653631}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: -0.00000016292068}
-  m_LocalPosition: {x: 0, y: -1.7600002, z: -0.5}
+  m_LocalPosition: {x: 0, y: -1.47, z: -0.5}
   m_LocalScale: {x: 5.5, y: 1.8974999, z: 0.0011520374}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5339,6 +5355,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1095653631}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!210 &1095653636
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095653631}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 2
+  m_SortAtRoot: 0
 --- !u!1 &1250299549
 GameObject:
   m_ObjectHideFlags: 0
@@ -5985,6 +6013,7 @@ GameObject:
   - component: {fileID: 1482430797}
   - component: {fileID: 1482430796}
   - component: {fileID: 1482430794}
+  - component: {fileID: 1482430798}
   m_Layer: 0
   m_Name: Gate
   m_TagString: Untagged
@@ -6051,12 +6080,24 @@ Transform:
   m_GameObject: {fileID: 1482430793}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.12, y: -27.69, z: -0.5}
+  m_LocalPosition: {x: 0.03, y: -28.21, z: -0.5}
   m_LocalScale: {x: 5.5555735, y: 2.3759978, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2107460714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &1482430798
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482430793}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 2
+  m_SortAtRoot: 0
 --- !u!1 &1497584876
 GameObject:
   m_ObjectHideFlags: 0

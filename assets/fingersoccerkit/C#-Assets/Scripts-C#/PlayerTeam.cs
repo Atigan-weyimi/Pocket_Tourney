@@ -137,12 +137,15 @@ public class PlayerTeam : MonoBehaviour
         if (puck == _shootingPuck)
         {
             _shootingPuckHitBall = true;
+            
         }
         else if (_shootingPuckHitBall && _passReceiver == null && IsValidHit(puck, ball))
         {
             _passReceiver = puck as PlayerController;
             puck.CatchBall(ball, _turnCancellation.Token).Forget();
             PassHapenned?.Invoke();
+
+            //Show Like emojie here at Recieving Puck
         }
     }
 

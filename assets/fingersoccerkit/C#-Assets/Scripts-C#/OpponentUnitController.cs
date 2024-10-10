@@ -16,6 +16,32 @@ public class OpponentUnitController : Puck
         {
             case "ball":
                 PlaySfx(unitsBallHit);
+                if (BallManager.instance._shootingPuck == this)
+                {
+                    Debug.Log($"Opponent Shooting Puck Hit the ball");
+                    BallManager.instance._shooterHitTheBall = true;
+
+                }
+                break;
+            case "Player":
+                PlaySfx(unitsBallHit);
+                if (BallManager.instance._shootingPuck == other.gameObject.GetComponent<Puck>())
+                {
+                    Debug.Log($"Shooting Puck Hitted me");
+                    //Check if the hit was intentional or not
+
+                    if(BallManager.instance._shooterHitTheBall )
+                    {
+                        //Shooting puck first hit the ball then collided with us... Totally unintentional :)
+
+                    }
+                    else
+                    {
+                        //Hitted me intentionally how dare you >:(
+                        OnReaction(_angryEmojie);
+                    }
+
+                }
                 break;
         }
     }

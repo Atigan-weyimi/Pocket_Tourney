@@ -6,7 +6,7 @@ public class PlayerController : Puck
     public event Action<PlayerController> DragStarted;
     public event Action<PlayerController> DragEnded;
     public event Action<PlayerController> Shot;
-
+    public Rigidbody _rb;
     /// *************************************************************************///
     /// Main Player Controller.
     /// This class manages the shooting process of human players.
@@ -65,8 +65,26 @@ public class PlayerController : Puck
         shootTime = timeAllowedToShoot;
         arrow.Hide();
         _camera = Camera.main;
+
+        _rb = GetComponent<Rigidbody>();
     }
-    
+
+
+    private void Update()
+    {
+        if(_rb.velocity.magnitude < 0.5f)
+        {
+            if(_rb.drag < 10)
+            {
+                _rb.drag += 0.5f;
+            }
+        }
+        else
+        {
+            _rb.drag = 1f;
+        }
+    }
+
     public static Vector3 RayPlaneIntersection(Vector3 rayOrigin, Vector3 rayDirection, Vector3 plainPosition, Vector3 plainNormal)
     {
         rayDirection.Normalize();
@@ -243,5 +261,7 @@ public class PlayerController : Puck
 
         //change the turn
         StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot());
+        BallManager.instance._shootingPuck = this;
+        BallManager.instance._shooterHitTheBall = false;
     }
 }

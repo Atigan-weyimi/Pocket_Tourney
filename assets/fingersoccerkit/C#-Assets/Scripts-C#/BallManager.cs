@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(SpringJoint))]
 public class BallManager : MonoBehaviour
 {
+    public static BallManager instance;
     public AudioClip _ballHitPost; //Sfx for hitting the poles
 
     //*****************************************************************************
@@ -17,7 +18,8 @@ public class BallManager : MonoBehaviour
     private Rigidbody _rigidbody;
     private SpringJoint _springJoint;
     private Collider _collider;
-
+    public Puck _shootingPuck;
+    public bool _shooterHitTheBall = false;
     //*****************************************************************************
     // Check ball's speed at all times.
     //*****************************************************************************
@@ -57,6 +59,7 @@ public class BallManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         _gameController = GameObject.FindGameObjectWithTag("GameController");
         _rigidbody = GetComponent<Rigidbody>();
         _springJoint = GetComponent<SpringJoint>();
@@ -81,14 +84,25 @@ public class BallManager : MonoBehaviour
     {
         _ballSpeed = _rigidbody.velocity.magnitude;
         //print("Ball Speed: " + rigidbody.velocity.magnitude);
-        if (_ballSpeed < 0.5f)
+        if (_ballSpeed < 0.25f && _ballSpeed > 0)
         {
-            _rigidbody.drag = 5;
+
+            //_rigidbody.drag = 5;
+            if(_rigidbody.drag < 5f)
+            {
+                _rigidbody.drag += Time.deltaTime;
+                _rigidbody.angularDrag += Time.deltaTime * 50;
+
+            }
+            
         }
         else
         {
             //let it slide
-            _rigidbody.drag = 0.9f;
+            _rigidbody.drag = 2.5f;
+            _rigidbody.angularDrag = 0.75f;
+
+
         }
     }
 
@@ -108,10 +122,21 @@ public class BallManager : MonoBehaviour
         {
             case "opponentGoalTrigger":
                 StartCoroutine(_gameController.GetComponent<GlobalGameManager>().managePostGoal("Player"));
+                if(_shootingPuck.gameObject.tag == "Player")
+                {
+                    Debug.Log($"Shooting Puck Tag is {_shootingPuck.gameObject.tag}");
+                    _shootingPuck?.OnGoal();
+                }
+                
                 break;
 
             case "playerGoalTrigger":
                 StartCoroutine(_gameController.GetComponent<GlobalGameManager>().managePostGoal("Opponent"));
+                if (_shootingPuck.gameObject.tag == "Opponent")
+                {
+                    Debug.Log($"Shooting Puck Tag is {_shootingPuck.gameObject.tag}");
+                    _shootingPuck?.OnGoal();
+                }
                 break;
         }
     }

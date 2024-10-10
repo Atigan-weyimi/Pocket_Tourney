@@ -156,6 +156,26 @@ public class OpponentAI : MonoBehaviour
         }
     }
 
+
+    private void Update()
+    {
+
+        foreach(var v in myTeam)
+        {
+            if (v.GetComponent<Rigidbody>().velocity.magnitude < 0.5f && v.GetComponent<Rigidbody>().velocity.magnitude > 0f)
+            {
+                if (v.GetComponent<Rigidbody>().drag < 10f)
+                {
+                    v.GetComponent<Rigidbody>().drag += 1f;
+                }
+            }
+            else
+            {
+                v.GetComponent<Rigidbody>().drag = 1f;
+            }
+        }
+        
+    }
     public IEnumerator Shoot()
     {
         //wait for a while to fake thinking process :)
@@ -298,6 +318,10 @@ public class OpponentAI : MonoBehaviour
         
         StartCoroutine(visualDebug());
         StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot());
+        
+        
+        BallManager.instance._shootingPuck = bestShooter.GetComponent<Puck>();
+        BallManager.instance._shooterHitTheBall = false;
     }
 
     //*****************************************************************************
