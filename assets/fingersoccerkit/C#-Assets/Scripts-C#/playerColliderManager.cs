@@ -15,8 +15,88 @@ public class playerColliderManager : MonoBehaviour
         {
             case "Opponent":
                 //PlaySfx(unitsGeneralHit);
+                if (BallManager.instance._shootingPuck == other.gameObject.GetComponent<Puck>())
+                {
+                    Debug.Log($"Shooting Puck Hitted me");
+                    //Check if the hit was intentional or not
+
+                    if (BallManager.instance._shooterHitTheBall)
+                    {
+                        //Shooting puck first hit the ball then collided with us... Totally unintentional :)
+
+                    }
+                    else
+                    {
+                        //Hitted me intentionally how dare you >:(
+                        Debug.Log($"Intentionally hitted me");
+                        var _mypuck = transform.GetComponent<Puck>();
+                        _mypuck.OnReaction(_mypuck._angryEmojie);
+                    }
+
+                }
+                break;
+            case "Player":
+                //PlaySfx(unitsGeneralHit);
+
+                if(gameObject.tag != "Player")
+                {
+                    if (BallManager.instance._shootingPuck == other.gameObject.GetComponent<Puck>())
+                    {
+                        Debug.Log($"Shooting Puck Hitted me");
+                        //Check if the hit was intentional or not
+
+                        if (BallManager.instance._shooterHitTheBall)
+                        {
+                            //Shooting puck first hit the ball then collided with us... Totally unintentional :)
+
+                        }
+                        else
+                        {
+                            //Hitted me intentionally how dare you >:(
+                            Debug.Log($"Intentionally hitted me");
+                            var _mypuck = transform.GetComponent<Puck>();
+                            _mypuck.OnReaction(_mypuck._angryEmojie);
+                            
+                        }
+
+                    }
+                }
+                
+                break;
+            case "Player_2":
+                //PlaySfx(unitsGeneralHit);
+                if(gameObject.tag != "Player_2")
+                {
+                    if (BallManager.instance._shootingPuck == other.gameObject.GetComponent<Puck>())
+                    {
+                        Debug.Log($"Shooting Puck Hitted me");
+                        //Check if the hit was intentional or not
+
+                        if (BallManager.instance._shooterHitTheBall)
+                        {
+                            //Shooting puck first hit the ball then collided with us... Totally unintentional :)
+
+                        }
+                        else
+                        {
+                            //Hitted me intentionally how dare you >:(
+                            Debug.Log($"Intentionally hitted me");
+                            var _mypuck = transform.GetComponent<Puck>();
+                            _mypuck.OnReaction(_mypuck._angryEmojie);
+                        }
+
+                    }
+                }
+                
                 break;
             case "ball":
+
+                if(BallManager.instance._shootingPuck == transform.gameObject.GetComponent<Puck>())
+                {
+                    Debug.Log($"Shooting Puck Hit the ball");
+                    BallManager.instance._shooterHitTheBall = true;
+                    
+                }
                 PlaySfx(unitsBallHit);
                 break;
         }

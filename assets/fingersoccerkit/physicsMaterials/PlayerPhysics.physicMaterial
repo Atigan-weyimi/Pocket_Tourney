@@ -7,10 +7,10 @@ PhysicMaterial:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PlayerPhysics
-  dynamicFriction: 0.25
+  dynamicFriction: 0.5
   staticFriction: 0.25
   bounciness: 0.85
-  frictionCombine: 1
+  frictionCombine: 0
   bounceCombine: 0
 --- !u!1002 &13400001
 EditorExtensionImpl:

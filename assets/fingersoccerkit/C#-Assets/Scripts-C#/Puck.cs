@@ -13,7 +13,10 @@ public class Puck : MonoBehaviour
         
     [SerializeField] private GameObject _selectionCircle;
     [SerializeField] private BallManager _debugBall;
-    
+    public GameObject _happyEmojie;
+    public GameObject _angryEmojie;
+    public GameObject _likeEmojie;
+
     private const float PassTurnSpeedRadInSec = 1.6f;
 
     private bool _canShoot;
@@ -37,6 +40,11 @@ public class Puck : MonoBehaviour
     public bool IsMoving => _rigidbody.velocity.sqrMagnitude > 0.05f;
     public bool IsCathingBall { get; private set; }
 
+
+    private void Start()
+    {
+        
+    }
     public virtual void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -49,6 +57,34 @@ public class Puck : MonoBehaviour
             CatchBall(_debugBall, this.GetCancellationTokenOnDestroy()).Forget();
             _debugBall = null;
         }
+    }
+
+    public void OnReaction(GameObject _emojie)
+    {
+        Vector3 _initScale = _emojie.transform.localScale;
+        _emojie.transform.localScale = Vector3.zero;
+        _emojie.SetActive(true);
+        //...........................................
+        // Here we are only using it so it should not anger multiple Pucks
+        // Or invoke Multiple reactions
+        BallManager.instance._shooterHitTheBall = true; 
+
+        //...........................................
+        StartCoroutine(PoppingUp());
+
+        IEnumerator PoppingUp()
+        {
+            while (_emojie.transform.localScale.x < _initScale.x)
+            {
+                float _scaleSpeed = Time.deltaTime*1.25f;
+                _emojie.transform.localScale += new Vector3(_scaleSpeed, _scaleSpeed, _scaleSpeed);
+                yield return new WaitForSeconds(Time.deltaTime);
+            }
+
+            yield return new WaitForSeconds(1f);
+            _emojie.SetActive(false);
+        }
+        
     }
 
     public void SetSelectionActive(bool isActive)
@@ -77,8 +113,11 @@ public class Puck : MonoBehaviour
 
     public async UniTask CatchBall(BallManager ball, CancellationToken cancellationToken)
     {
+        //Here Puck Recieved Pass So show Like Emojie
+        Debug.Log($"Like emojie On {gameObject.name}");
+        OnReaction(_likeEmojie);
         IsCathingBall = true;
-
+        
         await StopBall(ball, cancellationToken);
 
         if (cancellationToken.IsCancellationRequested)
@@ -102,6 +141,8 @@ public class Puck : MonoBehaviour
 
     private async UniTask StopBall(BallManager ball, CancellationToken cancellationToken)
     {
+        ball._ballSpeed = 0f;
+        
         ball.Attach(_rigidbody);
         ball.Velocity *= 0.5f;
         await UniTask.Yield();
@@ -112,6 +153,13 @@ public class Puck : MonoBehaviour
         }
         
         ball.Detach();
+    }
+
+    public void OnGoal()
+    {
+        //Show Happy Emojie On Puck
+        Debug.Log($"Puck {gameObject.name} is Happy");
+        OnReaction(_happyEmojie);
     }
 
     private async UniTask RotateAroundBall(BallManager ball, CancellationToken cancellationToken)
