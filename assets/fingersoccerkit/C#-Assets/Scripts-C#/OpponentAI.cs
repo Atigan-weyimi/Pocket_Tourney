@@ -159,21 +159,24 @@ public class OpponentAI : MonoBehaviour
 
     private void Update()
     {
-
-        foreach(var v in myTeam)
+        if(myTeam.Length > 0)
         {
-            if (v.GetComponent<Rigidbody>().velocity.magnitude < 0.5f && v.GetComponent<Rigidbody>().velocity.magnitude > 0f)
+            foreach (var v in myTeam)
             {
-                if (v.GetComponent<Rigidbody>().drag < 10f)
+                if (v.GetComponent<Rigidbody>().velocity.magnitude < 0.5f && v.GetComponent<Rigidbody>().velocity.magnitude > 0f)
                 {
-                    v.GetComponent<Rigidbody>().drag += 1f;
+                    if (v.GetComponent<Rigidbody>().drag < 10f)
+                    {
+                        v.GetComponent<Rigidbody>().drag += 1f;
+                    }
+                }
+                else
+                {
+                    v.GetComponent<Rigidbody>().drag = 1f;
                 }
             }
-            else
-            {
-                v.GetComponent<Rigidbody>().drag = 1f;
-            }
         }
+        
         
     }
     public IEnumerator Shoot()

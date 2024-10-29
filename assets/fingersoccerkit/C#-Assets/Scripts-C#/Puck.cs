@@ -117,7 +117,7 @@ public class Puck : MonoBehaviour
         Debug.Log($"Like emojie On {gameObject.name}");
         OnReaction(_likeEmojie);
         IsCathingBall = true;
-
+        
         await StopBall(ball, cancellationToken);
 
         if (cancellationToken.IsCancellationRequested)
@@ -141,6 +141,8 @@ public class Puck : MonoBehaviour
 
     private async UniTask StopBall(BallManager ball, CancellationToken cancellationToken)
     {
+        ball._ballSpeed = 0f;
+        
         ball.Attach(_rigidbody);
         ball.Velocity *= 0.5f;
         await UniTask.Yield();

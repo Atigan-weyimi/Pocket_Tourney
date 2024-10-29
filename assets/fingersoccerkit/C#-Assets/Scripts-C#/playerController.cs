@@ -74,9 +74,9 @@ public class PlayerController : Puck
     {
         if(_rb.velocity.magnitude < 0.5f)
         {
-            if(_rb.drag < 10)
+            if(_rb.drag < 5)
             {
-                _rb.drag += 0.5f;
+                _rb.drag += Time.deltaTime;
             }
         }
         else
@@ -262,6 +262,7 @@ public class PlayerController : Puck
         //change the turn
         StartCoroutine(gameController.GetComponent<GlobalGameManager>().managePostShoot());
         BallManager.instance._shootingPuck = this;
+        //BallManager.instance._rigidbody.AddTorque(GetComponent<Rigidbody>().velocity.normalized * 0.1f, ForceMode.Impulse);
         BallManager.instance._shooterHitTheBall = false;
     }
 }

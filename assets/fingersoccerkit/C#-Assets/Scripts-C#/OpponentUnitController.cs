@@ -20,7 +20,7 @@ public class OpponentUnitController : Puck
                 {
                     Debug.Log($"Opponent Shooting Puck Hit the ball");
                     BallManager.instance._shooterHitTheBall = true;
-
+                    
                 }
                 break;
             case "Player":
